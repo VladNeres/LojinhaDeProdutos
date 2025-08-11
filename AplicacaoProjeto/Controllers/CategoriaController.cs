@@ -5,7 +5,6 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace AplicacaoProjeto.Controllers
 {
-    //aqui quando for fazer o vinculo de categoria com subcategoria, fazer com a criação das tabelas onde o registro vai ter uma uma ForeignKey
     [ApiController]
     [Route("[controller]")]
     public class CategoriaController : ControllerBase
@@ -29,12 +28,12 @@ namespace AplicacaoProjeto.Controllers
             {
                 _logger.LogInformation("Iniciando o cadastro da categoria: {NomeCategoria}", nomeCategoria);
 
-                Categoria categoria = await _categoriaService.SalvarCategoria(nomeCategoria);
+                Categoria categoria = await _categoriaService.CriarCategoria(nomeCategoria);
 
                 if (categoria != null)
                 {
                     _logger.LogInformation("Categoria cadastrada com sucesso. ID: {ID}", categoria.ID);
-                    return Ok(categoria);
+                    return Created();
                 }
 
                 _logger.LogWarning("Falha ao cadastrar categoria. Nome: {NomeCategoria}", nomeCategoria);
@@ -73,7 +72,7 @@ namespace AplicacaoProjeto.Controllers
                     return NotFound("Nenhuma categoria encontrada.");
                 }
 
-                _logger.LogInformation("Busca concluída. Total encontrado: {Quantidade}", categorias.Count);
+                _logger.LogInformation("Busca concluída. Total encontrado: {Quantidade}", categorias.ToList().Count);
                 return Ok(categorias);
             }
             catch (ArgumentException ex)

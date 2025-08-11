@@ -7,14 +7,14 @@ namespace AplicacaoProjeto.AppConfig
 {
     public static class DependencyInjectionConfig
     {
-        public static IServiceCollection AddDependencyInjection(this IServiceCollection services)
+        public static IServiceCollection AddDependencyInjection(this IServiceCollection services, IConfiguration configuration)
         {
             //services
-            services.AddScoped<ICategoriaService, CategoriaService>();
+            services.AddSingleton<ICategoriaService, CategoriaService>();
             
 
             //repositorys
-            services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+            services.AddSingleton<ICategoriaRepository, CategoriaRepository>( x => new CategoriaRepository(configuration["ConnectionStrings:DefaultConnection"]));
             
 
             services.AddScoped<HttpClient>();

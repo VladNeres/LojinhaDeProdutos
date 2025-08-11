@@ -33,7 +33,7 @@ namespace Tests.TesteServices
                 .ReturnsAsync(categoriaEsperada);
 
             // Act
-            var resultado = await _categoriaService.SalvarCategoria(nome);
+            var resultado = await _categoriaService.CriarCategoria(nome);
 
             // Assert
             Assert.IsNotNull(resultado);
@@ -50,7 +50,7 @@ namespace Tests.TesteServices
             string nomeInvalido = "   ";
 
             // Act
-            await _categoriaService.SalvarCategoria(nomeInvalido);
+            await _categoriaService.CriarCategoria(nomeInvalido);
 
             // Assert é tratado pelo ExpectedException
         }

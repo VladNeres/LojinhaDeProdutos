@@ -1,4 +1,5 @@
 ﻿using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 namespace AplicacaoProjeto.AppConfig
 {
@@ -6,9 +7,9 @@ namespace AplicacaoProjeto.AppConfig
     {
         public static IServiceCollection AddCustomSwagger(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(opt =>
             {
-                c.SwaggerDoc("v1",
+                opt.SwaggerDoc("v1",
                     new OpenApiInfo
                     {
                         Title = "Api Aplicação Projeto",
@@ -16,10 +17,13 @@ namespace AplicacaoProjeto.AppConfig
                         Description = "Aplicação de estudos ",
                         Contact = new OpenApiContact
                         {
-                            Name = "Desenvolvedora Bianca Shabests",
-                            Email = "bianca.shabests@hotmail.com"
+                            Name = "Desenvolvedor Vladmir Neres",
+                            Email = "vlade02@hotmail.com"
                         }
                     });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                opt.IncludeXmlComments(xmlPath);
             });
 
             services.ConfigureSwaggerGen(options =>
@@ -41,6 +45,7 @@ namespace AplicacaoProjeto.AppConfig
                 c.RoutePrefix = string.Empty;
                 c.SwaggerEndpoint("aplicacaoprojeto/swagger/v1/swagger.json", "Api Aplicacao Projeto");
             });
+
 
             return app;
         }

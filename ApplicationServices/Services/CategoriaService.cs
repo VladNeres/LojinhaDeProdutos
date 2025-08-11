@@ -17,7 +17,7 @@ namespace ApplicationServices.Services
             _logger = logger;
         }
 
-        public async Task<Categoria> SalvarCategoria(string nomeCategoria)
+        public async Task<Categoria> CriarCategoria(string nomeCategoria)
         {
             _logger.LogInformation("Iniciando validação da categoria: {NomeCategoria}", nomeCategoria);
 
@@ -30,19 +30,19 @@ namespace ApplicationServices.Services
                 Nome = nomeCategoria,
                 Status = true,
                 DataCriacao = DateTime.Now.ToLocalTime(),
-                DataModificacao = null
+                DataAtualizacao = null
             };
 
             _logger.LogInformation("Salvando categoria no repositório.");
 
-            var resultado = await _categoriaRepository.CadastrarCategoria(categoria);
+             await _categoriaRepository.CadastrarCategoria(categoria);
 
-            _logger.LogInformation("Categoria salva com sucesso. ID: {ID}", resultado.ID);
+            _logger.LogInformation("Categoria salva com sucesso.");
 
-            return resultado;
+            return categoria;
         }
 
-        public async Task<List<Categoria>> BuscarCategorias(int? ID, string? nome, bool? status, string? ordenarPor, string tipoOrdenacao)
+        public async Task<IEnumerable<Categoria>> BuscarCategorias(int? ID, string? nome, bool? status, string? ordenarPor, string tipoOrdenacao)
         {
             _logger.LogInformation("Iniciando busca de categorias. ID: {ID}, Nome: {Nome}, Status: {Status}, OrdenarPor: {OrdenarPor}, Ordenacao: {Ordenacao}",
                 ID, nome, status, ordenarPor, tipoOrdenacao);
@@ -57,7 +57,7 @@ namespace ApplicationServices.Services
 
             var resultado = await _categoriaRepository.BuscarCategorias(ID, nome, status, campoOrdenacao, tipoOrdenacao);
 
-            _logger.LogInformation("Busca concluída. Total encontrado: {Quantidade}", resultado.Count);
+            _logger.LogInformation("Busca concluída. Total encontrado: {Quantidade}", resultado.ToList().Count);
 
             return resultado;
         }

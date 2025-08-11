@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AplicacaoProjeto", "Aplicac
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 - Api", "1 - Api", "{53961FE7-D7A7-4B49-9C10-F666DA71A446}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - ApplicationServices", "2 - ApplicationServices", "{EE3B7020-4FBD-4FC7-A560-B348F9954CB7}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 -Services", "2 -Services", "{EE3B7020-4FBD-4FC7-A560-B348F9954CB7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Domain", "3 - Domain", "{4E212969-A990-4AED-9564-E22CB94BC23C}"
 EndProject
@@ -31,8 +31,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestsController", "..\TestsController\TestsController.csproj", "{930FFB89-409D-4388-8C00-DFD1EFE23F31}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0 - Frontend", "0 - Frontend", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

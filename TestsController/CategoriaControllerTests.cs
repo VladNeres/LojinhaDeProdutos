@@ -24,7 +24,7 @@ public class CategoriaControllerTests
         // Arrange
         var categoria = new Categoria { ID = 1, Nome = "Bebidas" };
         _categoriaServiceMock
-            .Setup(s => s.SalvarCategoria(It.IsAny<string>()))
+            .Setup(s => s.CriarCategoria(It.IsAny<string>()))
             .ReturnsAsync(categoria);
 
         // Act

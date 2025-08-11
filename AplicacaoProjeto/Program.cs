@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCustomSwagger(builder.Configuration);
-builder.Services.AddDependencyInjection();
+builder.Services.AddDependencyInjection(builder.Configuration);
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()

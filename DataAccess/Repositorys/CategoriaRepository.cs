@@ -3,34 +3,31 @@ using DataAccess.Common;
 using Domain.Models;
 using Domain.Repositorys;
 using Microsoft.Extensions.Configuration;
+using System.Data;
 
 namespace DataAccess.Repositorys
 {
-    public class CategoriaRepository : ICategoriaRepository
+    public class CategoriaRepository : BaseRepository, ICategoriaRepository
     {
-        private readonly string _connectionStringSql;
-        private readonly IConfiguration _configuration;
-        public CategoriaRepository(IConfiguration configuration)
+       
+        public CategoriaRepository(string connectionString) : base(connectionString)
         {
-            _configuration = configuration;
-            _connectionStringSql = _configuration.GetConnectionString("DefaultConnection")!;
         }
 
-        public async Task<Categoria> CadastrarCategoria(Categoria categoria)
+        public async Task<int> CadastrarCategoria(Categoria categoria)
         {
             var parametros = new DynamicParameters();
             parametros.Add("@Nome", categoria.Nome);
             parametros.Add("@Status", categoria.Status);
             parametros.Add("@DataCriacao", categoria.DataCriacao);
-            parametros.Add("@DataModificacao", categoria.DataModificacao);
+            parametros.Add("@DataAtualizacao", categoria.DataAtualizacao);
 
-            var resultado = await DatabaseExecutor.QueryFirstOrDefaultAsync<int>(_connectionStringSql,"Categoria_CadastrarCategoria", parametros);
+            return await ExecuteAsync("Categoria_CadastrarCategoria", parametros, commandType: CommandType.StoredProcedure);
 
-            categoria.ID = resultado;
-            return categoria;
+          
         }
 
-        public async Task<List<Categoria>> BuscarCategorias(int? ID, string? nome, bool? status, string? ordenarPor, string ordenacao)
+        public async Task<IEnumerable<Categoria>> BuscarCategorias(int? ID, string? nome, bool? status, string? ordenarPor, string ordenacao)
         {
             var parametros = new DynamicParameters();
             parametros.Add("@ID", ID);
@@ -39,7 +36,9 @@ namespace DataAccess.Repositorys
             parametros.Add("@Ordenar_Por", ordenarPor);
             parametros.Add("@Ordenacao", ordenacao);
 
-            return await DatabaseExecutor.QueryAsync<Categoria>(_connectionStringSql,"Categoria_BuscarCategorias",parametros);
+            return await QueryAsync<Categoria>("Categoria_BuscarCategorias",parametros, commandType: CommandType.StoredProcedure);
         }
+
+        
     }
 }
