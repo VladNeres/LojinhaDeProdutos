@@ -6,5 +6,6 @@ namespace Domain.Services
     {
         Task<Categoria> CriarCategoria(string nomeCategoria);
         Task<IEnumerable<Categoria>> BuscarCategorias(int? ID, string? nome, bool? status, string? ordenarPor, string tipoOrdenacao);
+        Task<Categoria> EditarCategoria(Categoria categoria);
     }
 }
