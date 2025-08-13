@@ -2,6 +2,7 @@
 using Dapper;
 using Domain.Models;
 using Domain.Repositorys;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
@@ -18,13 +19,25 @@ namespace DataAccess.Repositorys
             _context = context;
         }
 
-        public async Task<Categoria> CriarCategoriaAsync(Categoria categoria)
+        public async Task<int> CriarCategoriaAsync(Categoria categoria)
         {
             try
             {
-                await _context.AddAsync(categoria);
-                await _context.SaveChangesAsync();
-                return categoria;
+                var nomeParam = new SqlParameter("@Nome", categoria.Nome ?? (object)DBNull.Value);
+                var statusParam = new SqlParameter("@Status", categoria.Status);
+                var dataCriacaoParam = new SqlParameter("@DataCriacao", categoria.DataCriacao);
+                var dataAtualizacaoParam = new SqlParameter("@DataAtualizacao",
+                    categoria.DataAtualizacao ?? (object)DBNull.Value);
+
+                // Executa a procedure, retornando o ID inserido
+                var resultado = await _context.Categorias
+                    .FromSqlRaw(
+                        "EXEC dbo.Categoria_CadastrarCategoria @Nome, @Status, @DataCriacao, @DataAtualizacao",
+                        nomeParam, statusParam, dataCriacaoParam, dataAtualizacaoParam)
+                    .Select(c => c.ID) // Ajuste se o SELECT da procedure retorna outro nome
+                    .FirstOrDefaultAsync();
+
+                return resultado;
             }
             catch (Exception ex)
             {
@@ -75,18 +88,28 @@ namespace DataAccess.Repositorys
 
         public async Task<IEnumerable<Categoria>> BuscarCategoriasAsync(int? ID, string? nome, bool? status, string? ordenarPor, string tipoOrdenacao)
         {
-            var idParam = new MySqlParameter("@ID", ID);
-            var nomeParam = new MySqlParameter("@Nome", nome ?? (object)DBNull.Value);
-            var statusParam = new MySqlParameter("@Status", status.HasValue ? status.Value : (object)DBNull.Value);
-            var ordenarPorParam = new MySqlParameter("@OrdenarPor", ordenarPor ?? (object)DBNull.Value);
-            var tipoOrdenacaoParam = new MySqlParameter("@TipoOrdenacao", tipoOrdenacao);
+            try
+            {
+                var idParam = new SqlParameter("@ID", ID ?? (object)DBNull.Value);
+                var nomeParam = new SqlParameter("@Nome", nome ?? (object)DBNull.Value);
+                var statusParam = new SqlParameter("@Status", status ?? (object)DBNull.Value);
+                var ordenarPorParam = new SqlParameter("@OrdenarPor", ordenarPor ?? (object)DBNull.Value);
+                var tipoOrdenacaoParam = new SqlParameter("@TipoOrdenacao", tipoOrdenacao ?? (object)DBNull.Value);
 
-            var resultado = await _context.Categorias
-                .FromSqlRaw("CALL Categoria_BuscarCategorias(@ID, @Nome, @Status, @OrdenarPor, @TipoOrdenacao)",
-                    idParam, nomeParam, statusParam, ordenarPorParam, tipoOrdenacaoParam)
-                .ToListAsync();
+                var resultado = await _context.Categorias
+                    .FromSqlRaw(
+                        "EXEC Categoria_BuscarCategorias @ID, @Nome, @Status, @OrdenarPor, @TipoOrdenacao",
+                        idParam, nomeParam, statusParam, ordenarPorParam, tipoOrdenacaoParam)
+                    .ToListAsync();
 
-            return resultado;
+                return resultado;
+    
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public async Task<IEnumerable<SubCategoria>> BuscarSubCategoriasPorIdAsync(int categoriaId)

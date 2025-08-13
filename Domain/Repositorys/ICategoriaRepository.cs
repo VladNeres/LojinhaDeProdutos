@@ -5,7 +5,7 @@ namespace Domain.Repositorys
 {
     public interface ICategoriaRepository
     {
-        Task<Categoria> CriarCategoriaAsync(Categoria categoria);
+        Task<int> CriarCategoriaAsync(Categoria categoria);
         Task<Categoria> AtualizarCategoriaAsync(Categoria categoria);
         Task<Categoria> ExcluirCategoriaAsync(Categoria categoria);
         Task<Categoria> BuscarNomeCategoriaAsync(string nome);

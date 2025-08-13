@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ApplicationServices.Dtos
 {
-    public class CreateCategoriaDto
+    public class CategoriaDto
     {
         public string Nome { get; set; }
     }

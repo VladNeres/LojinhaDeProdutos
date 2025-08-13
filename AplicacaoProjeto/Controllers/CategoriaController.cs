@@ -1,3 +1,4 @@
+using ApplicationServices.Dtos;
 using Domain.Models;
 using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -92,7 +93,7 @@ namespace AplicacaoProjeto.Controllers
         [SwaggerOperation(Summary = "Editar categorias", OperationId = "Put")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> EditarCategoria(int ID, [FromBody] Categoria categoria)
+        public async Task<IActionResult> EditarCategoria(int ID, [FromBody] CategoriaDto categoria)
         {
             try
             {
@@ -109,53 +110,28 @@ namespace AplicacaoProjeto.Controllers
             }
         }
 
-        //[HttpPatch("EditarStatusCategoria/{ID}")]
-        //[SwaggerOperation(Summary = "Editar status das categorias", OperationId = "Patch")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //public async Task<IActionResult> EditarStatusCategoria(int ID)
-        //{
-        //    try
-        //    {
-        //        Categoria categoriaEditada = await _categoriaService.EditarStatusCategoria(ID);
-        //        if (categoriaEditada != null)
-        //        {
-        //            return Ok(categoriaEditada);
-        //        }
-        //        if(categoriaEditada == null)
-        //        {
-        //            return NotFound($"Nenhuma categoria foi encontrada para o ID:{ID}");
-        //        }
-        //        return BadRequest($"Não foi possível editar o status da categoria {ID}.");
 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, ex.Message);
-        //    }
-        //}
+        [HttpDelete("ExcluirCategoria/{ID}")]
+        [SwaggerOperation(Summary = "Excluir categorias", OperationId = "Delete")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ExcluirCategoria(int ID)
+        {
+            try
+            {
+                Categoria categoriaEditada = await _categoriaService.ExcluirCategoria(ID);
+                if (categoriaEditada == null)
+                {
+                    return NotFound($"Nenhuma categoria foi encontrada para o ID:{ID}");
+                }
 
-        //[HttpDelete("ExcluirCategoria/{ID}")]
-        //[SwaggerOperation(Summary = "Excluir categorias", OperationId = "Delete")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //public async Task<IActionResult> ExcluirCategoria(int ID)
-        //{
-        //    try
-        //    {
-        //        Categoria categoriaEditada = await _categoriaService.ExcluirCategoria(ID);
-        //        if (categoriaEditada == null)
-        //        {
-        //            return NotFound($"Nenhuma categoria foi encontrada para o ID:{ID}");
-        //        }
+                return Ok($"A categoria com o ID:{ID} foi excluída.");
 
-        //        return Ok($"A categoria com o ID:{ID} foi excluída.");
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, ex.Message);
-        //    }
-        //}
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }

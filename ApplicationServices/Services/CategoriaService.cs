@@ -3,6 +3,7 @@ using Domain.Services;
 using Domain.Repositorys;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
+using ApplicationServices.Dtos;
 
 namespace ApplicationServices.Services
 {
@@ -62,16 +63,22 @@ namespace ApplicationServices.Services
             return resultado;
         }
 
-        public async Task<Categoria> EditarCategoria(int ID, Categoria categoria)
+        public async Task<Categoria> EditarCategoria(int ID,  CategoriaDto categoriaDto)
         {
-            if (categoria is null)
+            if (categoriaDto is null)
                 throw new ArgumentNullException("A categoria não pode estar vazia ou nula.");
 
-           var categoriaExiste = await _categoriaRepository.BuscarCategoriaPorIdAsync(ID);
+           Categoria categoriaExiste = await _categoriaRepository.BuscarCategoriaPorIdAsync(ID);
 
             if(categoriaExiste is null)
                 throw new ArgumentNullException("A categoria não encontrada.");
 
+            Categoria categoria = new Categoria
+            {
+                Nome = categoriaDto.Nome,
+                DataAtualizacao = DateTime.Now
+            };
+            
             var resultado = await _categoriaRepository.AtualizarCategoriaAsync(categoria);
 
             return resultado;
