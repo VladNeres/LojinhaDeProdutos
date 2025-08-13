@@ -4,6 +4,7 @@ using Domain.Repositorys;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using ApplicationServices.Dtos;
+using Domain.Mapper;
 
 namespace ApplicationServices.Services
 {
@@ -68,21 +69,29 @@ namespace ApplicationServices.Services
             if (categoriaDto is null)
                 throw new ArgumentNullException("A categoria não pode estar vazia ou nula.");
 
+
            Categoria categoriaExiste = await _categoriaRepository.BuscarCategoriaPorIdAsync(ID);
+
 
             if(categoriaExiste is null)
                 throw new ArgumentNullException("A categoria não encontrada.");
+          
+            categoriaExiste.AtualizarComDto(categoriaDto);
 
-            Categoria categoria = new Categoria
-            {
-                Nome = categoriaDto.Nome,
-                DataAtualizacao = DateTime.Now
-            };
-            
-            var resultado = await _categoriaRepository.AtualizarCategoriaAsync(categoria);
+            var resultado = await _categoriaRepository.AtualizarCategoriaAsync(categoriaExiste);
 
             return resultado;
 
+        }
+        public async Task<Categoria> ExcluirCategoria(int Id)
+        {
+            if( Id <0)
+                throw new ArgumentOutOfRangeException("Categoria Id  não encontrado");
+
+            _logger.LogWarning("Realizando verificação se existe a categoria antes de exclui-la.");
+            Categoria categoria =await  _categoriaRepository.BuscarCategoriaPorIdAsync(Id);
+
+           return await _categoriaRepository.ExcluirCategoriaAsync(categoria);
         }
         private void ValidarCategoria(string nomeCategoria)
         {
