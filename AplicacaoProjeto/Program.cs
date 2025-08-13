@@ -1,6 +1,11 @@
 using AplicacaoProjeto.AppConfig;
 using Serilog.Sinks.MSSqlServer;
 using Serilog;
+using MySql.Data.MySqlClient;
+using System.Configuration;
+using System.Data;
+using DataAccess.Repositorys;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +28,7 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Host.UseSerilog();
+
 
 builder.Configuration.AddUserSecrets<Program>();
 

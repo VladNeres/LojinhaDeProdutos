@@ -35,7 +35,7 @@ namespace ApplicationServices.Services
 
             _logger.LogInformation("Salvando categoria no repositório.");
 
-             await _categoriaRepository.CadastrarCategoria(categoria);
+             await _categoriaRepository.CriarCategoriaAsync(categoria);
 
             _logger.LogInformation("Categoria salva com sucesso.");
 
@@ -55,13 +55,28 @@ namespace ApplicationServices.Services
 
             string campoOrdenacao = string.IsNullOrEmpty(ordenarPor) ? "ID" : ordenarPor;
 
-            var resultado = await _categoriaRepository.BuscarCategorias(ID, nome, status, campoOrdenacao, tipoOrdenacao);
+            var resultado = await _categoriaRepository.BuscarCategoriasAsync(ID, nome,status,  ordenarPor,tipoOrdenacao);
 
             _logger.LogInformation("Busca concluída. Total encontrado: {Quantidade}", resultado.ToList().Count);
 
             return resultado;
         }
 
+        public async Task<Categoria> EditarCategoria(int ID, Categoria categoria)
+        {
+            if (categoria is null)
+                throw new ArgumentNullException("A categoria não pode estar vazia ou nula.");
+
+           var categoriaExiste = await _categoriaRepository.BuscarCategoriaPorIdAsync(ID);
+
+            if(categoriaExiste is null)
+                throw new ArgumentNullException("A categoria não encontrada.");
+
+            var resultado = await _categoriaRepository.AtualizarCategoriaAsync(categoria);
+
+            return resultado;
+
+        }
         private void ValidarCategoria(string nomeCategoria)
         {
             if (string.IsNullOrWhiteSpace(nomeCategoria))
@@ -84,5 +99,6 @@ namespace ApplicationServices.Services
 
             _logger.LogInformation("Validação da categoria concluída com sucesso.");
         }
+
     }
 }

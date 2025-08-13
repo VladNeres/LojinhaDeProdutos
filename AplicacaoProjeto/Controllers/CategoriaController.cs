@@ -17,12 +17,12 @@ namespace AplicacaoProjeto.Controllers
             _logger = logger;
         }
 
-        [HttpPost("SalvarCategoria")]
-        [SwaggerOperation(Summary = "Salva categorias", OperationId = "Post")]
+        [HttpPost("CriarCategoria")]
+        [SwaggerOperation(Summary = "Criar categorias", OperationId = "Post")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> SalvarCategoria([FromBody] string nomeCategoria)
+        public async Task<IActionResult> CriarCategoria([FromBody] string nomeCategoria)
         {
             try
             {
@@ -86,75 +86,76 @@ namespace AplicacaoProjeto.Controllers
                 return StatusCode(500, "Ocorreu um erro interno no servidor.");
             }
         }
+
+
+        [HttpPut("EditarCategoria/{ID}")]
+        [SwaggerOperation(Summary = "Editar categorias", OperationId = "Put")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> EditarCategoria(int ID, [FromBody] Categoria categoria)
+        {
+            try
+            {
+                Categoria categoriaEditada = await _categoriaService.EditarCategoria(ID,categoria);
+                if (categoriaEditada != null)
+                {
+                    return Ok(categoriaEditada);
+                }
+                return NotFound($"Nenhuma categoria encontrada com os parametros {categoria}.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        //[HttpPatch("EditarStatusCategoria/{ID}")]
+        //[SwaggerOperation(Summary = "Editar status das categorias", OperationId = "Patch")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        //public async Task<IActionResult> EditarStatusCategoria(int ID)
+        //{
+        //    try
+        //    {
+        //        Categoria categoriaEditada = await _categoriaService.EditarStatusCategoria(ID);
+        //        if (categoriaEditada != null)
+        //        {
+        //            return Ok(categoriaEditada);
+        //        }
+        //        if(categoriaEditada == null)
+        //        {
+        //            return NotFound($"Nenhuma categoria foi encontrada para o ID:{ID}");
+        //        }
+        //        return BadRequest($"Não foi possível editar o status da categoria {ID}.");
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, ex.Message);
+        //    }
+        //}
+
+        //[HttpDelete("ExcluirCategoria/{ID}")]
+        //[SwaggerOperation(Summary = "Excluir categorias", OperationId = "Delete")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        //public async Task<IActionResult> ExcluirCategoria(int ID)
+        //{
+        //    try
+        //    {
+        //        Categoria categoriaEditada = await _categoriaService.ExcluirCategoria(ID);
+        //        if (categoriaEditada == null)
+        //        {
+        //            return NotFound($"Nenhuma categoria foi encontrada para o ID:{ID}");
+        //        }
+
+        //        return Ok($"A categoria com o ID:{ID} foi excluída.");
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, ex.Message);
+        //    }
+        //}
     }
-
-    //[HttpPut("EditarCategoria/{ID}")]
-    //[SwaggerOperation(Summary = "Editar categorias", OperationId = "Put")]
-    //[ProducesResponseType(StatusCodes.Status200OK)]
-    //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    //public async Task<IActionResult> EditarCategoria(int ID, [FromBody] Categoria categoria)
-    //{
-    //    try
-    //    {
-    //        Categoria categoriaEditada = await _categoriaService.EditarCategoria(categoria);
-    //        if (categoriaEditada != null)
-    //        {
-    //            return Ok(categoriaEditada);
-    //        }
-    //        return NotFound($"Nenhuma categoria encontrada com os parametros {categoria}.");
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return StatusCode(500, ex.Message);
-    //    }
-    //}
-
-    //[HttpPatch("EditarStatusCategoria/{ID}")]
-    //[SwaggerOperation(Summary = "Editar status das categorias", OperationId = "Patch")]
-    //[ProducesResponseType(StatusCodes.Status200OK)]
-    //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    //public async Task<IActionResult> EditarStatusCategoria(int ID)
-    //{
-    //    try
-    //    {
-    //        Categoria categoriaEditada = await _categoriaService.EditarStatusCategoria(ID);
-    //        if (categoriaEditada != null)
-    //        {
-    //            return Ok(categoriaEditada);
-    //        }
-    //        if(categoriaEditada == null)
-    //        {
-    //            return NotFound($"Nenhuma categoria foi encontrada para o ID:{ID}");
-    //        }
-    //        return BadRequest($"Não foi possível editar o status da categoria {ID}.");
-
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return StatusCode(500, ex.Message);
-    //    }
-    //}
-
-    //[HttpDelete("ExcluirCategoria/{ID}")]
-    //[SwaggerOperation(Summary = "Excluir categorias", OperationId = "Delete")]
-    //[ProducesResponseType(StatusCodes.Status200OK)]
-    //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    //public async Task<IActionResult> ExcluirCategoria(int ID)
-    //{
-    //    try
-    //    {
-    //        Categoria categoriaEditada = await _categoriaService.ExcluirCategoria(ID);
-    //        if (categoriaEditada == null)
-    //        {
-    //            return NotFound($"Nenhuma categoria foi encontrada para o ID:{ID}");
-    //        }
-
-    //        return Ok($"A categoria com o ID:{ID} foi excluída.");
-
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return StatusCode(500, ex.Message);
-    //    }
-    //}
 }

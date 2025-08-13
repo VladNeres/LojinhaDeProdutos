@@ -1,10 +1,17 @@
-﻿using Domain.Models;
+﻿using ApplicationServices.Dtos;
+using Domain.Models;
 
 namespace Domain.Repositorys
 {
     public interface ICategoriaRepository
     {
-        Task<int> CadastrarCategoria(Categoria categoria);
-        Task<IEnumerable<Categoria>> BuscarCategorias(int? ID, string? nome, bool? status, string? ordenarPor, string ordenacao);
+        Task<Categoria> CriarCategoriaAsync(Categoria categoria);
+        Task<Categoria> AtualizarCategoriaAsync(Categoria categoria);
+        Task<Categoria> ExcluirCategoriaAsync(Categoria categoria);
+        Task<Categoria> BuscarNomeCategoriaAsync(string nome);
+        Task<Categoria> BuscarCategoriaPorIdAsync(int id);
+        Task<IEnumerable<Categoria>> BuscarCategoriasAsync(int? ID, string? nome, bool? status, string? ordenarPor, string tipoOrdenacao);
+        Task<IEnumerable<SubCategoria>> BuscarSubCategoriasPorIdAsync(int categoriaId);
+        
     }
 }

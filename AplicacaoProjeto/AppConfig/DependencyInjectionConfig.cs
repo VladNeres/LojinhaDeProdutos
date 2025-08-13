@@ -2,6 +2,8 @@
 using DataAccess.Repositorys;
 using Domain.Repositorys;
 using Domain.Services;
+using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 namespace AplicacaoProjeto.AppConfig
 {
@@ -9,15 +11,25 @@ namespace AplicacaoProjeto.AppConfig
     {
         public static IServiceCollection AddDependencyInjection(this IServiceCollection services, IConfiguration configuration)
         {
-            //services
-            services.AddSingleton<ICategoriaService, CategoriaService>();
-            
 
-            //repositorys
-            services.AddSingleton<ICategoriaRepository, CategoriaRepository>( x => new CategoriaRepository(configuration["ConnectionStrings:DefaultConnection"]));
-            
+            // Pega a connection string do appsettings.json
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
 
+           
+
+            // Configuração do DbContext com MySQL e Lazy Loading
+            services.AddDbContext<DatabaseContext>(options =>
+             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+            // Services
+            services.AddScoped<ICategoriaService, CategoriaService>();
+
+            // Repositories (não precisa instanciar manualmente)
+            services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+
+            // HttpClient
             services.AddScoped<HttpClient>();
+
             return services;
         }
     }
