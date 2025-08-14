@@ -1,5 +1,4 @@
-﻿using ApplicationServices.Dtos;
-using Domain.Models;
+﻿using Domain.Models;
 
 namespace Domain.Repositorys
 {

@@ -2,20 +2,20 @@
 using Domain.Repositorys;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
+
 
 namespace DataAccess.Repositorys
 {
-    public class CategoriaRepository : ICategoriaRepository
+    public class SubCategoriaRepository : ISubCategoriaRepository
     {
         private readonly DatabaseContext _context;
 
-        public CategoriaRepository(DatabaseContext context)
+        public SubCategoriaRepository(DatabaseContext context)
         {
             _context = context;
         }
 
-        public async Task<int> CriarCategoriaAsync(Categoria categoria)
+        public async Task<int> CriarSubCategoriaAsync(SubCategoria categoria)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace DataAccess.Repositorys
             }
         }
 
-        public async Task<Categoria> AtualizarCategoriaAsync(Categoria categoria)
+        public async Task<SubCategoria> AtualizarSubCategoriaAsync(SubCategoria categoria)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace DataAccess.Repositorys
             }
         }
 
-        public async Task<Categoria> ExcluirCategoriaAsync(Categoria categoria)
+        public async Task<SubCategoria> ExcluirSubCategoriaAsync(SubCategoria categoria)
         {
             try
             {
@@ -70,19 +70,19 @@ namespace DataAccess.Repositorys
             }
         }
 
-        public async Task<Categoria> BuscarNomeCategoriaAsync(string nome)
+        public async Task<SubCategoria> BuscarNomeSubCategoriaAsync(string nome)
         {
-            return await _context.Categorias
+            return await _context.SubCategorias
                 .FirstOrDefaultAsync(c => c.Nome.ToUpper() == nome.ToUpper());
         }
 
-        public async Task<Categoria> BuscarCategoriaPorIdAsync(int id)
+        public async Task<SubCategoria> BuscarSubCategoriaPorIdAsync(int id)
         {
-            return await _context.Categorias
-                .FirstOrDefaultAsync(c => c.ID == id);
+            return await _context.SubCategorias
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<IEnumerable<Categoria>> BuscarCategoriasAsync(int? ID, string? nome, bool? status, string? ordenarPor, string tipoOrdenacao)
+        public async Task<IEnumerable<SubCategoria>> BuscarSubCategoriasAsync(int? ID, string? nome, bool? status, string? ordenarPor, string tipoOrdenacao)
         {
             try
             {
@@ -92,14 +92,14 @@ namespace DataAccess.Repositorys
                 var ordenarPorParam = new SqlParameter("@OrdenarPor", ordenarPor ?? (object)DBNull.Value);
                 var tipoOrdenacaoParam = new SqlParameter("@TipoOrdenacao", tipoOrdenacao ?? (object)DBNull.Value);
 
-                var resultado = await _context.Categorias
+                var resultado = await _context.SubCategorias
                     .FromSqlRaw(
                         "EXEC Categoria_BuscarCategorias @ID, @Nome, @Status, @OrdenarPor, @TipoOrdenacao",
                         idParam, nomeParam, statusParam, ordenarPorParam, tipoOrdenacaoParam)
                     .ToListAsync();
 
                 return resultado;
-    
+
             }
             catch (Exception)
             {

@@ -1,35 +1,42 @@
-﻿using Domain.Models;
-using Domain.Services;
-using Domain.Repositorys;
-using System.Text.RegularExpressions;
-using Microsoft.Extensions.Logging;
-using Domain.Mapper;
+﻿using DataAccess.Repositorys;
 using Domain.Dtos.CategoriaDtos;
+using Domain.Dtos.SubCategoriaDtos;
+using Domain.Mapper;
+using Domain.Models;
+using Domain.Repositorys;
+using Domain.Services;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace ApplicationServices.Services
 {
-    public class CategoriaService : ICategoriaService
+    public class SubCategoriaService : ISubCategoriaService
     {
-        private readonly ICategoriaRepository _categoriaRepository;
-        private readonly ILogger<CategoriaService> _logger;
+        private readonly ISubCategoriaRepository _subCategoriaRepository;
+        private readonly ILogger<SubCategoriaService> _logger;
 
-        public CategoriaService(ICategoriaRepository categoriaRepository, ILogger<CategoriaService> logger)
+        public SubCategoriaService(ISubCategoriaRepository subCategoriaRepository, ILogger<SubCategoriaService> logger)
         {
-            _categoriaRepository = categoriaRepository;
+            _subCategoriaRepository = subCategoriaRepository;
             _logger = logger;
         }
 
-        public async Task<Categoria> CriarCategoria(string nomeCategoria)
+        public async Task<SubCategoria> CriarSubCategoria(SubCategoria subCategoria)
         {
-            _logger.LogInformation("Iniciando validação da categoria: {NomeCategoria}", nomeCategoria);
+            _logger.LogInformation("Iniciando validação da categoria: {NomeCategoria}", subCategoria);
 
-            ValidarCategoria(nomeCategoria);
+            ValidarSubCategoria(subCategoria.Nome);
 
             _logger.LogInformation("Validação concluída. Preparando objeto Categoria.");
 
-            var categoria = new Categoria
+            var categoria = new SubCategoria
             {
-                Nome = nomeCategoria,
+                Nome = subCategoria.Nome,
                 Status = true,
                 DataCriacao = DateTime.Now.ToLocalTime(),
                 DataAtualizacao = null
@@ -37,14 +44,14 @@ namespace ApplicationServices.Services
 
             _logger.LogInformation("Salvando categoria no repositório.");
 
-             await _categoriaRepository.CriarCategoriaAsync(categoria);
+            await _subCategoriaRepository.CriarSubCategoriaAsync(categoria);
 
             _logger.LogInformation("Categoria salva com sucesso.");
 
             return categoria;
         }
 
-        public async Task<IEnumerable<Categoria>> BuscarCategorias(int? ID, string? nome, bool? status, string? ordenarPor, string tipoOrdenacao)
+        public async Task<IEnumerable<SubCategoria>> BuscarSubCategorias(int? ID, string? nome, bool? status, string? ordenarPor, string tipoOrdenacao)
         {
             _logger.LogInformation("Iniciando busca de categorias. ID: {ID}, Nome: {Nome}, Status: {Status}, OrdenarPor: {OrdenarPor}, Ordenacao: {Ordenacao}",
                 ID, nome, status, ordenarPor, tipoOrdenacao);
@@ -54,46 +61,45 @@ namespace ApplicationServices.Services
                 _logger.LogWarning("Parâmetro de ordenação inválido: {Ordenacao}", tipoOrdenacao);
                 throw new ArgumentException("O parâmetro 'ordenacao' deve ser 'ASC' ou 'DESC'.");
             }
-
             string campoOrdenacao = string.IsNullOrEmpty(ordenarPor) ? "ID" : ordenarPor;
 
-            var resultado = await _categoriaRepository.BuscarCategoriasAsync(ID, nome,status,  ordenarPor,tipoOrdenacao);
+            var resultado = await _subCategoriaRepository.BuscarSubCategoriasAsync(ID, nome, status, ordenarPor, tipoOrdenacao);
 
             _logger.LogInformation("Busca concluída. Total encontrado: {Quantidade}", resultado.ToList().Count);
 
             return resultado;
         }
 
-        public async Task<Categoria> EditarCategoria(int ID,  CategoriaDto categoriaDto)
+        public async Task<SubCategoria> EditarSubCategoria(int ID, SubCategoriaDto categoriaDto)
         {
             if (categoriaDto is null)
                 throw new ArgumentNullException("A categoria não pode estar vazia ou nula.");
 
 
-           Categoria categoriaExiste = await _categoriaRepository.BuscarCategoriaPorIdAsync(ID);
+            SubCategoria subCategoriaExiste = await _subCategoriaRepository.BuscarSubCategoriaPorIdAsync(ID);
 
 
-            if(categoriaExiste is null)
+            if (subCategoriaExiste is null)
                 throw new ArgumentNullException("A categoria não encontrada.");
-          
-            categoriaExiste.AtualizarComDto(categoriaDto);
 
-            var resultado = await _categoriaRepository.AtualizarCategoriaAsync(categoriaExiste);
+            subCategoriaExiste.AtualizarComSubDto(categoriaDto);
+
+            var resultado = await _subCategoriaRepository.AtualizarSubCategoriaAsync(subCategoriaExiste);
 
             return resultado;
 
         }
-        public async Task<Categoria> ExcluirCategoria(int Id)
+        public async Task<SubCategoria> ExcluirSubCategoria(int Id)
         {
-            if( Id <0)
+            if (Id < 0)
                 throw new ArgumentOutOfRangeException("Categoria Id  não encontrado");
 
             _logger.LogWarning("Realizando verificação se existe a categoria antes de exclui-la.");
-            Categoria categoria =await  _categoriaRepository.BuscarCategoriaPorIdAsync(Id);
+            SubCategoria subCategoria = await _subCategoriaRepository.BuscarSubCategoriaPorIdAsync(Id);
 
-           return await _categoriaRepository.ExcluirCategoriaAsync(categoria);
+            return await _subCategoriaRepository.ExcluirSubCategoriaAsync(subCategoria);
         }
-        private void ValidarCategoria(string nomeCategoria)
+        private void ValidarSubCategoria(string nomeCategoria)
         {
             if (string.IsNullOrWhiteSpace(nomeCategoria))
             {
@@ -115,6 +121,5 @@ namespace ApplicationServices.Services
 
             _logger.LogInformation("Validação da categoria concluída com sucesso.");
         }
-
     }
 }

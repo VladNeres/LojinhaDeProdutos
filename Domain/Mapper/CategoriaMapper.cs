@@ -1,4 +1,4 @@
-﻿using ApplicationServices.Dtos;
+﻿using Domain.Dtos.CategoriaDtos;
 using Domain.Models;
 using System;
 using System.Collections.Generic;
