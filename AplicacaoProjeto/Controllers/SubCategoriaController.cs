@@ -3,6 +3,7 @@ using Domain.Models;
 using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Configuration;
 
 namespace AplicacaoProjeto.Controllers
 {
@@ -21,7 +22,7 @@ namespace AplicacaoProjeto.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> CriarSubCategoria([FromBody] SubCategoria subCategoria)
+        public async Task<IActionResult> CriarSubCategoria([FromBody] SubCategoriaDto subCategoria)
         {
             try
             {
@@ -31,12 +32,17 @@ namespace AplicacaoProjeto.Controllers
 
                 if (categoria != null)
                 {
-                    _logger.LogInformation("Categoria cadastrada com sucesso. ID: {ID}", categoria.Id);
+                    _logger.LogInformation("SubCategoria cadastrada com sucesso. ID: {ID}", categoria.Id);
                     return Created();
                 }
 
-                _logger.LogWarning("Falha ao cadastrar categoria. Nome: {NomeCategoria}", subCategoria);
+                _logger.LogWarning("Falha ao cadastrar Subcategoria. Nome: {NomeCategoria}", subCategoria);
                 return BadRequest($"Não foi possível cadastrar a categoria. CategoriaNome: {subCategoria}.");
+            }
+            catch (ArgumentNullException ex)
+            {
+                _logger.LogError(ex, "Erro ao salvar categoria: {NomeCategoria}", subCategoria);
+                return StatusCode(500, new { erro = "Ocorreu um erro ao processar a requisição." });
             }
             catch (Exception ex)
             {
@@ -51,19 +57,15 @@ namespace AplicacaoProjeto.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> BuscarCategorias(
-            [FromQuery] int? id,
-            [FromQuery] string? nome,
-            [FromQuery] bool? status,
-            [FromQuery] string? ordenarPor,
-            [FromQuery] string? tipoOrdenacao)
+        public async Task<IActionResult> BuscarSubCategorias(
+            [FromQuery] int? id)
         {
             try
             {
-                _logger.LogInformation("Iniciando busca de subcategorias. ID: {ID}, Nome: {Nome}, Status: {Status}, OrdenarPor: {OrdenarPor}, Ordenacao: {Ordenacao}",
-                    id, nome, status, ordenarPor, tipoOrdenacao);
+                _logger.LogInformation("Iniciando busca de subcategorias. ID: {ID}",
+                    id);
 
-                var categorias = await _subCategoriaService.BuscarSubCategorias(id, nome, status, ordenarPor, tipoOrdenacao);
+                var categorias = await _subCategoriaService.BuscarSubCategorias(id);
 
                 if (categorias == null || !categorias.Any())
                 {
@@ -91,7 +93,7 @@ namespace AplicacaoProjeto.Controllers
         [SwaggerOperation(Summary = "Editar subcategorias", OperationId = "Put")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> EditarCategoria(int ID, [FromBody] SubCategoriaDto subcategoria)
+        public async Task<IActionResult> EditarSubCategoria(int ID, [FromBody] SubCategoriaDto subcategoria)
         {
             try
             {

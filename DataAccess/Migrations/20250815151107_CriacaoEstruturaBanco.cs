@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class CriacaoEstruturaDeBanco : Migration
+    public partial class CriacaoEstruturaBanco : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -36,7 +36,7 @@ namespace DataAccess.Migrations
                     Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CategoriaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

@@ -1,17 +1,15 @@
 ﻿using DataAccess.Repositorys;
 using Domain.Dtos.CategoriaDtos;
 using Domain.Dtos.SubCategoriaDtos;
+using Domain.Exceptions;
+using Domain.Exceptions.SubCategoriaException;
 using Domain.Mapper;
 using Domain.Models;
 using Domain.Repositorys;
 using Domain.Services;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+
 
 namespace ApplicationServices.Services
 {
@@ -19,71 +17,73 @@ namespace ApplicationServices.Services
     {
         private readonly ISubCategoriaRepository _subCategoriaRepository;
         private readonly ILogger<SubCategoriaService> _logger;
+        private readonly ICategoriaRepository _categoriaRepository;
 
-        public SubCategoriaService(ISubCategoriaRepository subCategoriaRepository, ILogger<SubCategoriaService> logger)
+        public SubCategoriaService(ISubCategoriaRepository subCategoriaRepository, ILogger<SubCategoriaService> logger, ICategoriaRepository categoriaRepository)
         {
             _subCategoriaRepository = subCategoriaRepository;
             _logger = logger;
+            _categoriaRepository = categoriaRepository;
         }
 
-        public async Task<SubCategoria> CriarSubCategoria(SubCategoria subCategoria)
+        public async Task<SubCategoria> CriarSubCategoria(SubCategoriaDto subCategoria)
         {
-            _logger.LogInformation("Iniciando validação da categoria: {NomeCategoria}", subCategoria);
+            _logger.LogInformation("Iniciando validação da categoria: {NomeSubCategoria}", subCategoria);
+
+            Categoria? categoria = await _categoriaRepository.BuscarCategoriaPorIdAsync(subCategoria.CategoriaId);
+
+            if (subCategoria is null || categoria is null)
+                throw new ArgumentNullException("Dados nao preenchidos, por gentileza insira um nome e uma categoria valida");
 
             ValidarSubCategoria(subCategoria.Nome);
 
-            _logger.LogInformation("Validação concluída. Preparando objeto Categoria.");
+            _logger.LogInformation("Validação concluída. Preparando objeto SubCategoria.");
 
-            var categoria = new SubCategoria
+            var subcategoria = new SubCategoria
             {
                 Nome = subCategoria.Nome,
                 Status = true,
                 DataCriacao = DateTime.Now.ToLocalTime(),
-                DataAtualizacao = null
+                DataAtualizacao = null,
+                CategoriaId = subCategoria.CategoriaId
             };
 
-            _logger.LogInformation("Salvando categoria no repositório.");
+            _logger.LogInformation("Salvando Subcategoria no repositório.");
 
-            await _subCategoriaRepository.CriarSubCategoriaAsync(categoria);
+            await _subCategoriaRepository.CriarSubCategoriaAsync(subcategoria);
 
             _logger.LogInformation("Categoria salva com sucesso.");
 
-            return categoria;
+            return subcategoria;
         }
 
-        public async Task<IEnumerable<SubCategoria>> BuscarSubCategorias(int? ID, string? nome, bool? status, string? ordenarPor, string tipoOrdenacao)
+        public async Task<IEnumerable<SubCategoria>> BuscarSubCategorias(int? ID)
         {
-            _logger.LogInformation("Iniciando busca de categorias. ID: {ID}, Nome: {Nome}, Status: {Status}, OrdenarPor: {OrdenarPor}, Ordenacao: {Ordenacao}",
-                ID, nome, status, ordenarPor, tipoOrdenacao);
+            _logger.LogInformation("Iniciando busca de categorias. ID: {ID}",
+                ID);
 
-            if (tipoOrdenacao == null || tipoOrdenacao.ToUpper() != "ASC" && tipoOrdenacao.ToUpper() != "DESC")
-            {
-                _logger.LogWarning("Parâmetro de ordenação inválido: {Ordenacao}", tipoOrdenacao);
-                throw new ArgumentException("O parâmetro 'ordenacao' deve ser 'ASC' ou 'DESC'.");
-            }
-            string campoOrdenacao = string.IsNullOrEmpty(ordenarPor) ? "ID" : ordenarPor;
-
-            var resultado = await _subCategoriaRepository.BuscarSubCategoriasAsync(ID, nome, status, ordenarPor, tipoOrdenacao);
+            var resultado = await _subCategoriaRepository.BuscarSubCategoriasAsync(ID);
 
             _logger.LogInformation("Busca concluída. Total encontrado: {Quantidade}", resultado.ToList().Count);
 
             return resultado;
         }
 
-        public async Task<SubCategoria> EditarSubCategoria(int ID, SubCategoriaDto categoriaDto)
+        public async Task<SubCategoria> EditarSubCategoria(int ID, SubCategoriaDto subCategoriaDto)
         {
-            if (categoriaDto is null)
-                throw new ArgumentNullException("A categoria não pode estar vazia ou nula.");
+            if (subCategoriaDto is null)
+                throw new ObjectNotFilledException();
 
 
-            SubCategoria subCategoriaExiste = await _subCategoriaRepository.BuscarSubCategoriaPorIdAsync(ID);
+            var subCategoriaExiste = await _subCategoriaRepository.BuscarSubCategoriaPorIdAsync(ID);
+            var isCategoriaExiste = await _categoriaRepository.BuscarCategoriaPorIdAsync(subCategoriaDto.CategoriaId);
 
-
-            if (subCategoriaExiste is null)
-                throw new ArgumentNullException("A categoria não encontrada.");
-
-            subCategoriaExiste.AtualizarComSubDto(categoriaDto);
-
+            if (subCategoriaExiste is null  )
+                throw new SubCategoriaNotFoundException();
+            
+            if( isCategoriaExiste is null)
+                throw new SubCategoriaNotFoundException();
+            subCategoriaExiste.AtualizarComSubDto(subCategoriaDto);
             var resultado = await _subCategoriaRepository.AtualizarSubCategoriaAsync(subCategoriaExiste);
 
             return resultado;
@@ -95,7 +95,10 @@ namespace ApplicationServices.Services
                 throw new ArgumentOutOfRangeException("Categoria Id  não encontrado");
 
             _logger.LogWarning("Realizando verificação se existe a categoria antes de exclui-la.");
-            SubCategoria subCategoria = await _subCategoriaRepository.BuscarSubCategoriaPorIdAsync(Id);
+            SubCategoria? subCategoria = await _subCategoriaRepository.BuscarSubCategoriaPorIdAsync(Id);
+
+            if (subCategoria is null)
+                throw new ArgumentNullException("SubCategoria nao encontrada");
 
             return await _subCategoriaRepository.ExcluirSubCategoriaAsync(subCategoria);
         }

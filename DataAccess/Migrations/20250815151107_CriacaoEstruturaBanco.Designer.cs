@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250813182928_CriacaoEstruturaDeBanco")]
-    partial class CriacaoEstruturaDeBanco
+    [Migration("20250815151107_CriacaoEstruturaBanco")]
+    partial class CriacaoEstruturaBanco
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -103,7 +103,7 @@ namespace DataAccess.Migrations
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("DataAtualizacao")
+                    b.Property<DateTime?>("DataAtualizacao")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DataCriacao")
@@ -137,7 +137,7 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("Domain.Models.SubCategoria", b =>
                 {
                     b.HasOne("Domain.Models.Categoria", "Categoria")
-                        .WithMany("SubCategoria")
+                        .WithMany("SubCategorias")
                         .HasForeignKey("CategoriaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -147,7 +147,7 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Domain.Models.Categoria", b =>
                 {
-                    b.Navigation("SubCategoria");
+                    b.Navigation("SubCategorias");
                 });
 
             modelBuilder.Entity("Domain.Models.SubCategoria", b =>

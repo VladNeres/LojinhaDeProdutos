@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Domain.Mapper;
 using Domain.Dtos.CategoriaDtos;
+using Domain.Exceptions;
+using Domain.Exceptions.CategoriaException;
 
 namespace ApplicationServices.Services
 {
@@ -37,7 +39,7 @@ namespace ApplicationServices.Services
 
             _logger.LogInformation("Salvando categoria no repositório.");
 
-             await _categoriaRepository.CriarCategoriaAsync(categoria);
+           await _categoriaRepository.CriarCategoriaAsync(categoria);
 
             _logger.LogInformation("Categoria salva com sucesso.");
 
@@ -67,14 +69,14 @@ namespace ApplicationServices.Services
         public async Task<Categoria> EditarCategoria(int ID,  CategoriaDto categoriaDto)
         {
             if (categoriaDto is null)
-                throw new ArgumentNullException("A categoria não pode estar vazia ou nula.");
+                throw new ObjectNotFilledException();
 
 
            Categoria categoriaExiste = await _categoriaRepository.BuscarCategoriaPorIdAsync(ID);
 
 
             if(categoriaExiste is null)
-                throw new ArgumentNullException("A categoria não encontrada.");
+                throw new CategoriaNotFoundException();
           
             categoriaExiste.AtualizarComDto(categoriaDto);
 

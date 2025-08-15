@@ -11,10 +11,8 @@ namespace Domain.Repositorys
     {
         Task<int> CriarSubCategoriaAsync(SubCategoria categoria);
         Task<SubCategoria> AtualizarSubCategoriaAsync(SubCategoria categoria);
-        Task<SubCategoria> ExcluirSubCategoriaAsync(SubCategoria categoria);
-        Task<SubCategoria> BuscarNomeSubCategoriaAsync(string nome);
+        Task<SubCategoria> ExcluirSubCategoriaAsync(SubCategoria? categoria);
+        Task<IEnumerable<SubCategoria>> BuscarSubCategoriasAsync(int? ID);
         Task<SubCategoria> BuscarSubCategoriaPorIdAsync(int id);
-        Task<IEnumerable<SubCategoria>> BuscarSubCategoriasAsync(int? ID, string? nome, bool? status, string? ordenarPor, string tipoOrdenacao);
-        Task<IEnumerable<SubCategoria>> BuscarSubCategoriasPorIdAsync(int categoriaId);
     }
 }

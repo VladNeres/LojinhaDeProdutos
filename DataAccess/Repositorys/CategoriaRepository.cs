@@ -19,21 +19,20 @@ namespace DataAccess.Repositorys
         {
             try
             {
-                var nomeParam = new SqlParameter("@Nome", categoria.Nome ?? (object)DBNull.Value);
-                var statusParam = new SqlParameter("@Status", categoria.Status);
-                var dataCriacaoParam = new SqlParameter("@DataCriacao", categoria.DataCriacao);
-                var dataAtualizacaoParam = new SqlParameter("@DataAtualizacao",
-                    categoria.DataAtualizacao ?? (object)DBNull.Value);
+                using var command = _context.Database.GetDbConnection().CreateCommand();
+                command.CommandText = "dbo.Categoria_CadastrarCategoria";
+                command.CommandType = CommandType.StoredProcedure;
 
-                // Executa a procedure, retornando o ID inserido
-                var resultado = await _context.Categorias
-                    .FromSqlRaw(
-                        "EXEC dbo.Categoria_CadastrarCategoria @Nome, @Status, @DataCriacao, @DataAtualizacao",
-                        nomeParam, statusParam, dataCriacaoParam, dataAtualizacaoParam)
-                    .Select(c => c.ID) // Ajuste se o SELECT da procedure retorna outro nome
-                    .FirstOrDefaultAsync();
+                command.Parameters.Add(new SqlParameter("@Nome", categoria.Nome ?? (object)DBNull.Value));
+                command.Parameters.Add(new SqlParameter("@Status", categoria.Status));
+                command.Parameters.Add(new SqlParameter("@DataCriacao", categoria.DataCriacao));
+                command.Parameters.Add(new SqlParameter("@DataAtualizacao", categoria.DataAtualizacao ?? (object)DBNull.Value));
 
-                return resultado;
+                if (command.Connection.State != ConnectionState.Open)
+                    await command.Connection.OpenAsync();
+
+                var result = await command.ExecuteScalarAsync(); // retorna apenas o valor da primeira coluna
+                return Convert.ToInt32(result);
             }
             catch (Exception ex)
             {

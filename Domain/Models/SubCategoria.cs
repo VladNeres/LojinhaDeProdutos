@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Domain.Models
@@ -6,7 +7,7 @@ namespace Domain.Models
     public class SubCategoria
     {
         [Key]
-        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Nome { get; set; }
         public bool Status { get; set; }

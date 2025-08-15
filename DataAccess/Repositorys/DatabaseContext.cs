@@ -19,7 +19,7 @@ namespace DataAccess.Repositorys
         {
             builder.Entity<SubCategoria>()
                 .HasOne(subCategoria => subCategoria.Categoria)
-                .WithMany(categoria => categoria.SubCategoria)
+                .WithMany(categoria => categoria.SubCategorias)
                 .HasForeignKey(subCategoria => subCategoria.CategoriaId);
 
             builder.Entity<Produto>()

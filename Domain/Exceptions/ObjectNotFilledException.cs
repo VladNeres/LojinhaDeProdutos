@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace Domain.Exceptions
 {
-    public class InvalidObjectException : Exception
+    public class ObjectNotFilledException : Exception
     {
         private const string Mensagem = "Ops Parece que voce nao preencheu algum campo, por favor preencha os campos necessarios!";
 
-        public InvalidObjectException(): base(Mensagem) {  }
+        public ObjectNotFilledException(): base(Mensagem) {  }
 
 
-        public InvalidObjectException(string mensagem) :base(mensagem)
+        public ObjectNotFilledException(string mensagem) :base(mensagem)
         {
             
         }
 
-        public InvalidObjectException(Exception innerException) : base(Mensagem, innerException)
+        public ObjectNotFilledException(Exception innerException) : base(Mensagem, innerException)
         {
             
         }

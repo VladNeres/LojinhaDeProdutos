@@ -23,9 +23,11 @@ namespace AplicacaoProjeto.AppConfig
 
             // Services
             services.AddScoped<ICategoriaService, CategoriaService>();
+            services.AddScoped<ISubCategoriaService, SubCategoriaService>();
 
             // Repositories (não precisa instanciar manualmente)
             services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+            services.AddScoped<ISubCategoriaRepository, SubCategoriaRepository>();
 
             // HttpClient
             services.AddScoped<HttpClient>();

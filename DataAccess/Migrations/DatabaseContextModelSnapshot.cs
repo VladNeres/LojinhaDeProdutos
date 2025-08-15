@@ -100,7 +100,7 @@ namespace DataAccess.Migrations
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("DataAtualizacao")
+                    b.Property<DateTime?>("DataAtualizacao")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DataCriacao")
@@ -134,7 +134,7 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("Domain.Models.SubCategoria", b =>
                 {
                     b.HasOne("Domain.Models.Categoria", "Categoria")
-                        .WithMany("SubCategoria")
+                        .WithMany("SubCategorias")
                         .HasForeignKey("CategoriaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -144,7 +144,7 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Domain.Models.Categoria", b =>
                 {
-                    b.Navigation("SubCategoria");
+                    b.Navigation("SubCategorias");
                 });
 
             modelBuilder.Entity("Domain.Models.SubCategoria", b =>

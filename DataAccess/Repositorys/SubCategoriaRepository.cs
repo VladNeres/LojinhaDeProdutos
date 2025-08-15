@@ -2,6 +2,7 @@
 using Domain.Repositorys;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 
 namespace DataAccess.Repositorys
@@ -19,21 +20,21 @@ namespace DataAccess.Repositorys
         {
             try
             {
-                var nomeParam = new SqlParameter("@Nome", categoria.Nome ?? (object)DBNull.Value);
-                var statusParam = new SqlParameter("@Status", categoria.Status);
-                var dataCriacaoParam = new SqlParameter("@DataCriacao", categoria.DataCriacao);
-                var dataAtualizacaoParam = new SqlParameter("@DataAtualizacao",
-                    categoria.DataAtualizacao ?? (object)DBNull.Value);
+                using var command = _context.Database.GetDbConnection().CreateCommand();
+                command.CommandText = "dbo.SubCategoria_CadastrarSubCategoria";
+                command.CommandType = CommandType.StoredProcedure;
 
-                // Executa a procedure, retornando o ID inserido
-                var resultado = await _context.Categorias
-                    .FromSqlRaw(
-                        "EXEC dbo.Categoria_CadastrarCategoria @Nome, @Status, @DataCriacao, @DataAtualizacao",
-                        nomeParam, statusParam, dataCriacaoParam, dataAtualizacaoParam)
-                    .Select(c => c.ID) // Ajuste se o SELECT da procedure retorna outro nome
-                    .FirstOrDefaultAsync();
+                command.Parameters.Add(new SqlParameter("@Nome", categoria.Nome ?? (object)DBNull.Value));
+                command.Parameters.Add(new SqlParameter("@Status", categoria.Status));
+                command.Parameters.Add(new SqlParameter("@DataCriacao", categoria.DataCriacao));
+                command.Parameters.Add(new SqlParameter("@DataAtualizacao", categoria.DataAtualizacao ?? (object)DBNull.Value));
+                command.Parameters.Add(new SqlParameter("@CategoriaID", categoria.CategoriaId));
 
-                return resultado;
+                if (command.Connection.State != ConnectionState.Open)
+                    await command.Connection.OpenAsync();
+
+                var result = await command.ExecuteScalarAsync(); // retorna apenas o valor da primeira coluna
+                return Convert.ToInt32(result);
             }
             catch (Exception ex)
             {
@@ -70,11 +71,6 @@ namespace DataAccess.Repositorys
             }
         }
 
-        public async Task<SubCategoria> BuscarNomeSubCategoriaAsync(string nome)
-        {
-            return await _context.SubCategorias
-                .FirstOrDefaultAsync(c => c.Nome.ToUpper() == nome.ToUpper());
-        }
 
         public async Task<SubCategoria> BuscarSubCategoriaPorIdAsync(int id)
         {
@@ -82,20 +78,17 @@ namespace DataAccess.Repositorys
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<IEnumerable<SubCategoria>> BuscarSubCategoriasAsync(int? ID, string? nome, bool? status, string? ordenarPor, string tipoOrdenacao)
+        public async Task<IEnumerable<SubCategoria>> BuscarSubCategoriasAsync(int? ID)
         {
             try
             {
                 var idParam = new SqlParameter("@ID", ID ?? (object)DBNull.Value);
-                var nomeParam = new SqlParameter("@Nome", nome ?? (object)DBNull.Value);
-                var statusParam = new SqlParameter("@Status", status ?? (object)DBNull.Value);
-                var ordenarPorParam = new SqlParameter("@OrdenarPor", ordenarPor ?? (object)DBNull.Value);
-                var tipoOrdenacaoParam = new SqlParameter("@TipoOrdenacao", tipoOrdenacao ?? (object)DBNull.Value);
+                
 
                 var resultado = await _context.SubCategorias
                     .FromSqlRaw(
-                        "EXEC Categoria_BuscarCategorias @ID, @Nome, @Status, @OrdenarPor, @TipoOrdenacao",
-                        idParam, nomeParam, statusParam, ordenarPorParam, tipoOrdenacaoParam)
+                        "EXEC SubCategoria_BuscarSubCategoria @ID",
+                        idParam)
                     .ToListAsync();
 
                 return resultado;
