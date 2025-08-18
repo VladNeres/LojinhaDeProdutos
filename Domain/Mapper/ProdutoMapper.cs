@@ -16,7 +16,9 @@ namespace Domain.Mapper
           Nome =  produtoDto.Nome,
           Descricao =  produtoDto.Descricao,
           DataCriacao =  DateTime.Now,
-          Preco =   produtoDto.Preco
+          Preco =   produtoDto.Preco,
+          Status = produtoDto.Status,
+          SubCategoriaId = produtoDto.SubCategoriaId,
         };
 
         public static void AtualizarComProdutoDto(this Produto produto, ProdutoDto dto)

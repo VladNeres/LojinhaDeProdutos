@@ -1,4 +1,5 @@
 using Domain.Dtos.CategoriaDtos;
+using Domain.Exceptions;
 using Domain.Models;
 using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -34,11 +35,16 @@ namespace AplicacaoProjeto.Controllers
                 if (categoria != null)
                 {
                     _logger.LogInformation("Categoria cadastrada com sucesso. ID: {ID}", categoria.ID);
-                    return Created();
+                    return Created("", categoria);
                 }
 
                 _logger.LogWarning("Falha ao cadastrar categoria. Nome: {NomeCategoria}", nomeCategoria);
                 return BadRequest($"Não foi possível cadastrar a categoria. CategoriaNome: {nomeCategoria}.");
+            }
+            catch (ObjectNotFilledException ex)
+            {
+                _logger.LogWarning("Erro ao cadastrar uma categoria, nome invalido");
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {

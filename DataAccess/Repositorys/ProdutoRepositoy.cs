@@ -38,8 +38,17 @@ namespace DataAccess.Repositorys
         public async Task<int> CriarProdutoAsync(Produto produto)
         {
             using var command = _context.Database.GetDbConnection().CreateCommand();
-            command.CommandText = "dbo.SubCategoria_CadastrarSubCategoria";
+            command.CommandText = "dbo.Produto_CadastrarProduto";
             command.CommandType = CommandType.StoredProcedure;
+
+
+            command.Parameters.Add(new SqlParameter("@Nome", produto.Nome ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@Descricao", produto.Descricao ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@Status", produto.Status));
+            command.Parameters.Add(new SqlParameter("@Preco", produto.Preco));
+            command.Parameters.Add(new SqlParameter("@DataCriacao", produto.DataCriacao));
+            command.Parameters.Add(new SqlParameter("@DataAtualizacao", (object?)produto.DataAtualizacao ?? DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@SubCategoriaID", produto.SubCategoriaId));
             if (command.Connection.State != ConnectionState.Open)
                 await command.Connection.OpenAsync();
 

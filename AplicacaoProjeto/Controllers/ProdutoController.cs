@@ -1,5 +1,6 @@
 ﻿using Domain.Dtos.ProdutoDtos;
 using Domain.Exceptions;
+using Domain.Exceptions.SubCategoriaException;
 using Domain.Models;
 using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -33,11 +34,17 @@ namespace AplicacaoProjeto.Controllers
                 if (produto != null)
                 {
                     _logger.LogInformation("Produto cadastrada com sucesso. ID: {ID}", prod.Id);
-                    return Created();
+                    return Created("", prod);
                 }
 
                 _logger.LogWarning($"Falha ao cadastrar produto. Nome: {prod.Nome}", produto);
                 return BadRequest($"Não foi possível cadastrar a produto. {prod.Nome}.");
+            }
+
+            catch(SubCategoriaNotFoundException ex)
+            {
+                _logger.LogError(ex, "Erro ao Validar produto: {produto.Nome}");
+                return StatusCode(500, new { erro = ex.Message });
             }
             catch (ObjectNotFilledException ex)
             {

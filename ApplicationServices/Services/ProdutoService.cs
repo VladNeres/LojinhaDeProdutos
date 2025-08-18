@@ -3,6 +3,7 @@ using DataAccess.Repositorys;
 using Domain.Dtos.ProdutoDtos;
 using Domain.Exceptions;
 using Domain.Exceptions.ProdutoException;
+using Domain.Exceptions.SubCategoriaException;
 using Domain.Mapper;
 using Domain.Models;
 using Domain.Repositorys;
@@ -16,12 +17,15 @@ namespace ApplicationServices.Services
     public class ProdutoService : IProdutoService
     {
         private readonly IProdutoRepository _produtoRepository;
+        private readonly ISubCategoriaRepository _subCategoriaRepository; 
         private readonly ILogger<ProdutoService> _logger;
         private readonly IValidator<string> _validator;
-        public ProdutoService(IProdutoRepository produtoRepository, ILogger<ProdutoService> logger)
+        public ProdutoService(IProdutoRepository produtoRepository, ILogger<ProdutoService> logger, IValidator<string> validator, ISubCategoriaRepository subCategoriaRepository)
         {
             _produtoRepository = produtoRepository;
             _logger = logger;
+            _validator = validator;
+            _subCategoriaRepository = subCategoriaRepository;
         }
 
         public async Task<IEnumerable<Produto>> BuscarProdutos(int? ID)
@@ -46,6 +50,10 @@ namespace ApplicationServices.Services
             if (!result.IsValid)
                 throw new ObjectNotFilledException(string.Join(",", result.Errors.Select(e => e.ErrorMessage)));
 
+           var subcategoria = await _subCategoriaRepository.BuscarSubCategoriaPorIdAsync(produtoDto.SubCategoriaId);
+           
+            if (subcategoria is null)
+             throw new  SubCategoriaNotFoundException();
 
             Produto produto = produtoDto.ParaProduto();
             
@@ -59,7 +67,7 @@ namespace ApplicationServices.Services
             if(produtoDto is null)
                 throw new ObjectNotFilledException();
 
-          var produto =  await _produtoRepository.BuscarProdutoPorIdAsync(ID);
+            var produto =  await _produtoRepository.BuscarProdutoPorIdAsync(ID);
             var result = _validator.Validate(produtoDto.Nome);
 
             if (!result.IsValid)

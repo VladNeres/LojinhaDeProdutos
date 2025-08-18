@@ -1,4 +1,5 @@
 ﻿using Domain.Dtos.SubCategoriaDtos;
+using Domain.Exceptions;
 using Domain.Models;
 using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -32,11 +33,16 @@ namespace AplicacaoProjeto.Controllers
                 if (categoria != null)
                 {
                     _logger.LogInformation("SubCategoria cadastrada com sucesso. ID: {ID}", categoria.Id);
-                    return Created();
+                    return Created("", categoria);
                 }
 
                 _logger.LogWarning("Falha ao cadastrar Subcategoria. Nome: {NomeSubCategoria}", subCategoria);
                 return BadRequest($"Não foi possível cadastrar a subcategoria. SubCategoriaNome: {subCategoria}.");
+            }
+            catch (ObjectNotFilledException ex)
+            {
+                _logger.LogError(ex, "Erro ao validar o nome da subCategoria");
+                return StatusCode(500, new { Erro = ex.Message });
             }
             catch (ArgumentNullException ex)
             {

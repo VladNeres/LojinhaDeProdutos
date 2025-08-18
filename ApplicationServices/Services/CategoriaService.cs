@@ -17,10 +17,11 @@ namespace ApplicationServices.Services
         private readonly ILogger<CategoriaService> _logger;
         private readonly IValidator<string> _validator;
 
-        public CategoriaService(ICategoriaRepository categoriaRepository, ILogger<CategoriaService> logger)
+        public CategoriaService(ICategoriaRepository categoriaRepository, ILogger<CategoriaService> logger, IValidator<string> validator)
         {
             _categoriaRepository = categoriaRepository;
             _logger = logger;
+            _validator = validator;
         }
 
         public async Task<Categoria> CriarCategoria(string nomeCategoria)

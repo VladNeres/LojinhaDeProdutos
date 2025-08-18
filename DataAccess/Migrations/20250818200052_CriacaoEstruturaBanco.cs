@@ -61,7 +61,7 @@ namespace DataAccess.Migrations
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     Preco = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: true),
                     SubCategoriaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
