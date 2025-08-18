@@ -1,7 +1,9 @@
-﻿using ApplicationServices.Services;
+﻿using AplicacaoProjeto.Validators;
+using ApplicationServices.Services;
 using DataAccess.Repositorys;
 using Domain.Repositorys;
 using Domain.Services;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 
@@ -21,13 +23,19 @@ namespace AplicacaoProjeto.AppConfig
             services.AddDbContext<DatabaseContext>(options =>
              options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddValidatorsFromAssemblyContaining<NameValidator>();
+
+
+  
             // Services
             services.AddScoped<ICategoriaService, CategoriaService>();
             services.AddScoped<ISubCategoriaService, SubCategoriaService>();
+            services.AddScoped<IProdutoService, ProdutoService>();
 
             // Repositories (não precisa instanciar manualmente)
             services.AddScoped<ICategoriaRepository, CategoriaRepository>();
             services.AddScoped<ISubCategoriaRepository, SubCategoriaRepository>();
+            services.AddScoped<IProdutoRepository, ProdutoRepositoy>();
 
             // HttpClient
             services.AddScoped<HttpClient>();

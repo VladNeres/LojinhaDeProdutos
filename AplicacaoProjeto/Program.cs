@@ -29,7 +29,6 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-
 builder.Configuration.AddUserSecrets<Program>();
 
 var app = builder.Build();

@@ -28,10 +28,10 @@ public class CategoriaControllerTests
             .ReturnsAsync(categoria);
 
         // Act
-        var result = await _controller.SalvarCategoria("Bebidas");
+        var result = await _controller.CriarCategoria("Bebidas");
 
         // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
+        var okResult = Assert.IsType<CreatedResult>(result);
         var retorno = Assert.IsType<Categoria>(okResult.Value);
         Assert.Equal("Bebidas", retorno.Nome);
     }

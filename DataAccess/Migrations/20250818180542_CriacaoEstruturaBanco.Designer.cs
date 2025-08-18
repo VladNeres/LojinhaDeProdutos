@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250815151107_CriacaoEstruturaBanco")]
+    [Migration("20250818180542_CriacaoEstruturaBanco")]
     partial class CriacaoEstruturaBanco
     {
         /// <inheritdoc />
@@ -59,9 +59,6 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoriaId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("DataAtualizacao")
                         .HasColumnType("datetime2");
 
@@ -76,8 +73,8 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("QuantidadeEmEstoque")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Preco")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");

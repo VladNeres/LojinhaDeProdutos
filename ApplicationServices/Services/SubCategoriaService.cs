@@ -7,7 +7,9 @@ using Domain.Mapper;
 using Domain.Models;
 using Domain.Repositorys;
 using Domain.Services;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
+using MySqlX.XDevAPI.Common;
 using System.Text.RegularExpressions;
 
 
@@ -18,25 +20,29 @@ namespace ApplicationServices.Services
         private readonly ISubCategoriaRepository _subCategoriaRepository;
         private readonly ILogger<SubCategoriaService> _logger;
         private readonly ICategoriaRepository _categoriaRepository;
-
-        public SubCategoriaService(ISubCategoriaRepository subCategoriaRepository, ILogger<SubCategoriaService> logger, ICategoriaRepository categoriaRepository)
+        private IValidator<string> _validator;
+        public SubCategoriaService(ISubCategoriaRepository subCategoriaRepository, ILogger<SubCategoriaService> logger, ICategoriaRepository categoriaRepository, IValidator<string> validator)
         {
             _subCategoriaRepository = subCategoriaRepository;
             _logger = logger;
             _categoriaRepository = categoriaRepository;
+            _validator = validator;
         }
 
         public async Task<SubCategoria> CriarSubCategoria(SubCategoriaDto subCategoria)
         {
-            _logger.LogInformation("Iniciando validação da categoria: {NomeSubCategoria}", subCategoria);
+            _logger.LogInformation("Iniciando validação da subcategoria: {NomeSubCategoria}", subCategoria);
 
             Categoria? categoria = await _categoriaRepository.BuscarCategoriaPorIdAsync(subCategoria.CategoriaId);
 
             if (subCategoria is null || categoria is null)
-                throw new ArgumentNullException("Dados nao preenchidos, por gentileza insira um nome e uma categoria valida");
+                throw new ArgumentNullException("Dados nao preenchidos, por gentileza insira um nome e uma subcategoria valida");
 
-            ValidarSubCategoria(subCategoria.Nome);
+            var result  =  _validator.Validate(subCategoria.Nome);
 
+            if (!result.IsValid)
+                throw new ObjectNotFilledException(string.Join(",", result.Errors.Select(e => e.ErrorMessage)));
+            
             _logger.LogInformation("Validação concluída. Preparando objeto SubCategoria.");
 
             var subcategoria = new SubCategoria
@@ -92,37 +98,15 @@ namespace ApplicationServices.Services
         public async Task<SubCategoria> ExcluirSubCategoria(int Id)
         {
             if (Id < 0)
-                throw new ArgumentOutOfRangeException("Categoria Id  não encontrado");
+                throw new ArgumentOutOfRangeException("SubCategoria Id  não encontrado");
 
-            _logger.LogWarning("Realizando verificação se existe a categoria antes de exclui-la.");
+            _logger.LogWarning("Realizando verificação se existe a subcategoria antes de exclui-la.");
             SubCategoria? subCategoria = await _subCategoriaRepository.BuscarSubCategoriaPorIdAsync(Id);
 
             if (subCategoria is null)
                 throw new ArgumentNullException("SubCategoria nao encontrada");
 
             return await _subCategoriaRepository.ExcluirSubCategoriaAsync(subCategoria);
-        }
-        private void ValidarSubCategoria(string nomeCategoria)
-        {
-            if (string.IsNullOrWhiteSpace(nomeCategoria))
-            {
-                _logger.LogWarning("Validação falhou: nome da categoria vazio ou em branco.");
-                throw new ArgumentException("O nome é obrigatório.");
-            }
-
-            if (nomeCategoria.Length > 150)
-            {
-                _logger.LogWarning("Validação falhou: nome da categoria excede 150 caracteres.");
-                throw new ArgumentException("O nome não pode ter mais que 150 caracteres.");
-            }
-
-            if (!Regex.IsMatch(nomeCategoria, @"^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$"))
-            {
-                _logger.LogWarning("Validação falhou: nome da categoria contém caracteres inválidos.");
-                throw new ArgumentException("O nome não pode conter símbolos. Apenas letras e acentuação são permitidas.");
-            }
-
-            _logger.LogInformation("Validação da categoria concluída com sucesso.");
         }
     }
 }

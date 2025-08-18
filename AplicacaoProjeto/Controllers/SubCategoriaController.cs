@@ -3,7 +3,6 @@ using Domain.Models;
 using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Configuration;
 
 namespace AplicacaoProjeto.Controllers
 {
@@ -11,9 +10,9 @@ namespace AplicacaoProjeto.Controllers
     {
         private readonly ISubCategoriaService _subCategoriaService;
         private readonly ILogger<SubCategoriaController> _logger;
-        public SubCategoriaController(ISubCategoriaService categoriaService, ILogger<SubCategoriaController> logger)
+        public SubCategoriaController(ISubCategoriaService subcategoriaService, ILogger<SubCategoriaController> logger)
         {
-            _subCategoriaService = categoriaService;
+            _subCategoriaService = subcategoriaService;
             _logger = logger;
         }
 
@@ -26,7 +25,7 @@ namespace AplicacaoProjeto.Controllers
         {
             try
             {
-                _logger.LogInformation("Iniciando o cadastro da subcategoria: {NomeCategoria}", subCategoria);
+                _logger.LogInformation("Iniciando o cadastro da subcategoria: {NomeSubCategoria}", subCategoria);
 
                 SubCategoria categoria = await _subCategoriaService.CriarSubCategoria(subCategoria);
 
@@ -36,17 +35,17 @@ namespace AplicacaoProjeto.Controllers
                     return Created();
                 }
 
-                _logger.LogWarning("Falha ao cadastrar Subcategoria. Nome: {NomeCategoria}", subCategoria);
-                return BadRequest($"Não foi possível cadastrar a categoria. CategoriaNome: {subCategoria}.");
+                _logger.LogWarning("Falha ao cadastrar Subcategoria. Nome: {NomeSubCategoria}", subCategoria);
+                return BadRequest($"Não foi possível cadastrar a subcategoria. SubCategoriaNome: {subCategoria}.");
             }
             catch (ArgumentNullException ex)
             {
-                _logger.LogError(ex, "Erro ao salvar categoria: {NomeCategoria}", subCategoria);
+                _logger.LogError(ex, "Erro ao salvar subcategoria: {NomeSubCategoria}", subCategoria);
                 return StatusCode(500, new { erro = "Ocorreu um erro ao processar a requisição." });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao salvar categoria: {NomeCategoria}", subCategoria);
+                _logger.LogError(ex, "Erro ao salvar subcategoria: {NomeSubCategoria}", subCategoria);
                 return StatusCode(500, new { erro = "Ocorreu um erro ao processar a requisição." });
             }
         }
@@ -65,25 +64,25 @@ namespace AplicacaoProjeto.Controllers
                 _logger.LogInformation("Iniciando busca de subcategorias. ID: {ID}",
                     id);
 
-                var categorias = await _subCategoriaService.BuscarSubCategorias(id);
+                var subcategorias = await _subCategoriaService.BuscarSubCategorias(id);
 
-                if (categorias == null || !categorias.Any())
+                if (subcategorias == null || !subcategorias.Any())
                 {
                     _logger.LogInformation("Nenhuma subcategoria encontrada com os filtros informados.");
-                    return NotFound("Nenhuma categoria encontrada.");
+                    return NotFound("Nenhuma subcategoria encontrada.");
                 }
 
-                _logger.LogInformation("Busca concluída. Total encontrado: {Quantidade}", categorias.ToList().Count);
-                return Ok(categorias);
+                _logger.LogInformation("Busca concluída. Total encontrado: {Quantidade}", subcategorias.ToList().Count);
+                return Ok(subcategorias);
             }
             catch (ArgumentException ex)
             {
-                _logger.LogWarning(ex, "Parâmetro inválido na busca de categorias.");
+                _logger.LogWarning(ex, "Parâmetro inválido na busca de subcategorias.");
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao buscar categorias.");
+                _logger.LogError(ex, "Erro ao buscar subcategorias.");
                 return StatusCode(500, "Ocorreu um erro interno no servidor.");
             }
         }
@@ -111,22 +110,26 @@ namespace AplicacaoProjeto.Controllers
         }
 
 
-        [HttpDelete("ExcluirCategoria/{ID}")]
+        [HttpDelete("ExcluirSubCategoria/{ID}")]
         [SwaggerOperation(Summary = "Excluir subcategorias", OperationId = "Delete")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ExcluirCategoria(int ID)
+        public async Task<IActionResult> ExcluirSubCategoria(int ID)
         {
             try
             {
                 SubCategoria categoriaEditada = await _subCategoriaService.ExcluirSubCategoria(ID);
                 if (categoriaEditada == null)
                 {
-                    return NotFound($"Nenhuma categoria foi encontrada para o ID:{ID}");
+                    return NotFound($"Nenhuma subcategoria foi encontrada para o ID:{ID}");
                 }
 
                 return Ok($"A categoria com o ID:{ID} foi excluída.");
 
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                return StatusCode(500, ex.Message);
             }
             catch (Exception ex)
             {

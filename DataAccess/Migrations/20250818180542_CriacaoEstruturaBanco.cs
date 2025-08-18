@@ -58,11 +58,10 @@ namespace DataAccess.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Descricao = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    QuantidadeEmEstoque = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
+                    Preco = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CategoriaId = table.Column<int>(type: "int", nullable: false),
                     SubCategoriaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

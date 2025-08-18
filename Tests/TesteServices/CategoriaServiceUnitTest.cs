@@ -28,9 +28,9 @@ namespace Tests.TesteServices
             string nome = "Bebidas";
             var categoriaEsperada = new Categoria { ID = 1, Nome = nome, Status = true };
 
-            _categoriaRepositoryMock
-                .Setup(r => r.CadastrarCategoria(It.IsAny<Categoria>()))
-                .ReturnsAsync(categoriaEsperada);
+               _categoriaRepositoryMock
+                .Setup(r =>  r.CriarCategoriaAsync(It.IsAny<Categoria>()))
+                .ReturnsAsync(categoriaEsperada.ID);
 
             // Act
             var resultado = await _categoriaService.CriarCategoria(nome);
@@ -39,7 +39,7 @@ namespace Tests.TesteServices
             Assert.IsNotNull(resultado);
             Assert.AreEqual(nome, resultado.Nome);
             Assert.IsTrue(resultado.Status);
-            _categoriaRepositoryMock.Verify(r => r.CadastrarCategoria(It.IsAny<Categoria>()), Times.Once);
+            _categoriaRepositoryMock.Verify(r => r.CriarCategoriaAsync(It.IsAny<Categoria>()), Times.Once);
         }
 
         [TestMethod]
@@ -79,7 +79,7 @@ namespace Tests.TesteServices
             };
 
             _categoriaRepositoryMock
-                .Setup(r => r.BuscarCategorias(null, null, null, "ID", "ASC"))
+                .Setup(r => r.BuscarCategoriasAsync(null, null, null, "ID", "ASC"))
                 .ReturnsAsync(categorias);
 
             // Act
@@ -87,8 +87,8 @@ namespace Tests.TesteServices
 
             // Assert
             Assert.IsNotNull(resultado);
-            Assert.AreEqual(2, resultado.Count);
-            _categoriaRepositoryMock.Verify(r => r.BuscarCategorias(null, null, null, "ID", "ASC"), Times.Once);
+            Assert.AreEqual(2, resultado.Count());
+            _categoriaRepositoryMock.Verify(r => r.BuscarCategoriasAsync(null, null, null, "ID", "ASC"), Times.Once);
         }
     }
 

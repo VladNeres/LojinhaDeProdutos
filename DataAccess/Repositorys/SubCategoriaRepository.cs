@@ -100,17 +100,6 @@ namespace DataAccess.Repositorys
                 throw;
             }
         }
-
-        public async Task<IEnumerable<SubCategoria>> BuscarSubCategoriasPorIdAsync(int categoriaId)
-        {
-            return await _context.SubCategorias
-                .Where(s => s.CategoriaId == categoriaId)
-                .ToListAsync();
-        }
-
-        public async Task SalvarAlteracoesAsync()
-        {
-            await _context.SaveChangesAsync();
-        }
+                   
     }
 }
