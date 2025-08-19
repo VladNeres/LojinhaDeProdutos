@@ -70,6 +70,9 @@ namespace ApplicationServices.Services
 
             var resultado = await _subCategoriaRepository.BuscarSubCategoriasAsync(ID);
 
+            if (resultado is null)
+                throw new SubCategoriaNotFoundException();
+
             _logger.LogInformation("Busca concluída. Total encontrado: {Quantidade}", resultado.ToList().Count);
 
             return resultado;

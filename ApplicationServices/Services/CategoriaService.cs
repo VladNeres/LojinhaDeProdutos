@@ -86,9 +86,7 @@ namespace ApplicationServices.Services
           
             categoriaExiste.AtualizarComDto(categoriaDto);
 
-            var resultado = await _categoriaRepository.AtualizarCategoriaAsync(categoriaExiste);
-
-            return resultado;
+            return await _categoriaRepository.AtualizarCategoriaAsync(categoriaExiste);
 
         }
         public async Task<Categoria> ExcluirCategoria(int Id)

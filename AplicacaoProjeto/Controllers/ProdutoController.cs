@@ -1,5 +1,6 @@
 ﻿using Domain.Dtos.ProdutoDtos;
 using Domain.Exceptions;
+using Domain.Exceptions.ProdutoException;
 using Domain.Exceptions.SubCategoriaException;
 using Domain.Models;
 using Domain.Services;
@@ -111,10 +112,15 @@ namespace AplicacaoProjeto.Controllers
                 }
                 return NotFound($"Nenhuma produto encontrado com os parametros {produto}.");
             }
+            catch (ProdutoNotFoundException ex)
+            {
+                _logger.LogError("Ocorreu um erro ao atualizar produto");
+                return BadRequest(ex.Message);
+            }
             catch (ObjectNotFilledException ex)
             {
                 _logger.LogError("Ocorreu um erro ao atualizar produto");
-                return StatusCode(500, ex.Message);
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {

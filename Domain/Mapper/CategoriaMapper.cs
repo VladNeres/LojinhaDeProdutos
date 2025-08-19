@@ -15,6 +15,7 @@ namespace Domain.Mapper
             {
                 categoria.Nome = dto.Nome;
                 categoria.DataAtualizacao = DateTime.Now;
+
             }
 
     }

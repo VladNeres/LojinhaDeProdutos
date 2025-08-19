@@ -34,7 +34,8 @@ namespace ApplicationServices.Services
             ID);
 
             var resultado = await _produtoRepository.BuscarProdutosAsync(ID);
-
+            if (resultado is null)
+                throw new ProdutoNotFoundException();
             _logger.LogInformation("Busca concluída. Total encontrado: {Quantidade}", resultado.ToList().Count);
 
             return resultado;
@@ -68,8 +69,11 @@ namespace ApplicationServices.Services
                 throw new ObjectNotFilledException();
 
             var produto =  await _produtoRepository.BuscarProdutoPorIdAsync(ID);
+          
+            if(produto is null)    
+                throw new ProdutoNotFoundException();
+            
             var result = _validator.Validate(produtoDto.Nome);
-
             if (!result.IsValid)
                 throw new ObjectNotFilledException(string.Join(",", result.Errors.Select(e => e.ErrorMessage)));
 
