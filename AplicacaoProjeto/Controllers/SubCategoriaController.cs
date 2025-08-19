@@ -32,7 +32,7 @@ namespace AplicacaoProjeto.Controllers
 
                 if (categoria != null)
                 {
-                    _logger.LogInformation("SubCategoria cadastrada com sucesso. ID: {ID}", categoria.Id);
+                    _logger.LogInformation("SubCategoria cadastrada com sucesso. ID: {ID}", categoria.ID);
                     return Created("", categoria);
                 }
 

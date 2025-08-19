@@ -120,5 +120,24 @@ namespace Test
             Assert.True(resultado.Status);
 
         }
+        
+        [Fact]
+        public async Task ExcluiCategoria_DeveSalvarERetornarCategoria()
+        {
+            // Arrange
+
+            var categoria = new Categoria() { ID = 1, Nome = "Novo", Status = true };
+           
+            _categoriaRepositoryMock.BuscarCategoriaPorIdAsync(Arg.Any<int>()).Returns(categoria);
+            _categoriaRepositoryMock.ExcluirCategoriaAsync(categoria).Returns(categoria);
+            // Act
+            var resultado = await _categoriaService.ExcluirCategoria(categoria.ID);
+
+            // Assert
+            Assert.NotNull(resultado);
+            await  _categoriaRepositoryMock.Received(1).BuscarCategoriaPorIdAsync(categoria.ID);
+            await _categoriaRepositoryMock.Received(1).ExcluirCategoriaAsync(categoria);
+
+        }
     }
 }

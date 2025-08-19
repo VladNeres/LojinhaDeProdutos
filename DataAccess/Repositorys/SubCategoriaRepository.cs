@@ -75,7 +75,7 @@ namespace DataAccess.Repositorys
         public async Task<SubCategoria> BuscarSubCategoriaPorIdAsync(int id)
         {
             return await _context.SubCategorias
-                .FirstOrDefaultAsync(c => c.Id == id);
+                .FirstOrDefaultAsync(c => c.ID == id);
         }
 
         public async Task<IEnumerable<SubCategoria>> BuscarSubCategoriasAsync(int? ID)

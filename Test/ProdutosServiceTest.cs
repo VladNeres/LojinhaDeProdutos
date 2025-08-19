@@ -1,10 +1,12 @@
 ﻿using ApplicationServices.Services;
 using DataAccess.Repositorys;
+using Domain.Dtos.CategoriaDtos;
 using Domain.Dtos.ProdutoDtos;
 using Domain.Exceptions;
 using Domain.Exceptions.ProdutoException;
 using Domain.Models;
 using Domain.Repositorys;
+using Domain.Services;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
@@ -97,6 +99,48 @@ namespace Test
             // Assert
             Assert.NotNull(resultado);
             Assert.Equal(2, resultado.Count());
+        }
+
+        [Fact]
+        public async Task EditarProduto_Valido_DeveSalvarERetornarProduto()
+        {
+            // Arrange
+
+            var produtoEsperada = new ProdutoDto { Nome = "Bola" };
+
+
+            _produtoRepositoryMock.CriarProdutoAsync(Arg.Any<Produto>()).Returns(1);
+            var produto = new Produto() {  Nome = "Novo", Status = true };
+            var validationResult = new ValidationResult();
+            _validator.Validate(produtoEsperada.Nome).Returns(validationResult);
+            _produtoRepositoryMock.BuscarProdutoPorIdAsync(Arg.Any<int>()).Returns(produto);
+            _produtoRepositoryMock.AtualizarProdutoAsync(produto).Returns(produto);
+            // Act
+            var resultado = await _produtoService.EditarProduto(1, produtoEsperada);
+
+            // Assert
+            Assert.Equal(produtoEsperada.Nome, resultado.Nome);
+            Assert.True(resultado.Status);
+
+        }
+
+        [Fact]
+        public async Task ExcluiProduto_DeveSalvarERetornarProduto()
+        {
+            // Arrange
+
+            var produto = new Produto() { Nome = "Novo", Status = true };
+
+            _produtoRepositoryMock.BuscarProdutoPorIdAsync(Arg.Any<int>()).Returns(produto);
+            _produtoRepositoryMock.ExcluirProdutoAsync(produto).Returns(produto);
+            // Act
+            var resultado = await _produtoService.ExcluirProduto(1);
+
+            // Assert
+            Assert.NotNull(resultado);
+            await _produtoRepositoryMock.Received(1).BuscarProdutoPorIdAsync(1);
+            await _produtoRepositoryMock.Received(1).ExcluirProdutoAsync(produto);
+
         }
     }
 }

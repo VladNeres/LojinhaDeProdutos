@@ -1,9 +1,11 @@
 ﻿using ApplicationServices.Services;
+using Domain.Dtos.CategoriaDtos;
 using Domain.Dtos.SubCategoriaDtos;
 using Domain.Exceptions;
 using Domain.Exceptions.SubCategoriaException;
 using Domain.Models;
 using Domain.Repositorys;
+using Domain.Services;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
@@ -103,6 +105,49 @@ namespace Test
             // Assert
             Assert.NotNull(resultado);
             Assert.Equal(2, resultado.Count());
+        }
+
+        [Fact]
+        public async Task EditarCategoria_Valido_DeveSalvarERetornarCategoria()
+        {
+            // Arrange
+
+            var subcategoriaEsperada = new SubCategoriaDto { Nome = "Bebidas" };
+
+
+            _subCategoriaRepositoryMock.CriarSubCategoriaAsync(Arg.Any<SubCategoria>()).Returns(1);
+            var categoria = new SubCategoria() { ID = 1, Nome = "Novo", Status = true };
+            var validationResult = new ValidationResult();
+            _validator.Validate(subcategoriaEsperada.Nome).Returns(validationResult);
+            _categoriaRepository.BuscarCategoriaPorIdAsync(Arg.Any<int>()).Returns(new Categoria());
+            _subCategoriaRepositoryMock.BuscarSubCategoriaPorIdAsync(Arg.Any<int>()).Returns(categoria);
+            _subCategoriaRepositoryMock.AtualizarSubCategoriaAsync(categoria).Returns(categoria);
+            // Act
+            var resultado = await _subCategoriaService.EditarSubCategoria(1, subcategoriaEsperada);
+
+            // Assert
+            Assert.Equal(subcategoriaEsperada.Nome, resultado.Nome);
+            Assert.True(resultado.Status);
+
+        }
+
+        [Fact]
+        public async Task ExcluiSubCategoria_DeveSalvarERetornarSubCategoria()
+        {
+            // Arrange
+
+            var categoria = new SubCategoria() { ID = 1, Nome = "Novo", Status = true };
+
+            _subCategoriaRepositoryMock.BuscarSubCategoriaPorIdAsync(Arg.Any<int>()).Returns(categoria);
+            _subCategoriaRepositoryMock.ExcluirSubCategoriaAsync(categoria).Returns(categoria);
+            // Act
+            var resultado = await _subCategoriaService.ExcluirSubCategoria(categoria.ID);
+
+            // Assert
+            Assert.NotNull(resultado);
+            await _subCategoriaRepositoryMock.Received(1).BuscarSubCategoriaPorIdAsync(categoria.ID);
+            await _subCategoriaRepositoryMock.Received(1).ExcluirSubCategoriaAsync(categoria);
+
         }
     }
 }
