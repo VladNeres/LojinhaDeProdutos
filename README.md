@@ -33,6 +33,26 @@ Inicialmente criei uma API básica para gerenciar **categorias**, **subcategoria
 ```bash
 git clone https://github.com/VladNeres/LojinhaDeProdutos.git
 ```
-- Configure sua connectionString via Secrets.
-- Execute a criação da tabela e após isso as procedures na pasta DataAccess > StoredProcedures
-- Execute o projeto. 
+- Configure sua connectionString no arquivo appsetigns. (deixei ela exposta, apenas a criterio de estudos)
+- Após configurar a sua connection, entre no seu MSSQL e crie um banco de acordo com o nome que voce criou no arquivo appsettings, ou caso queira manter a mesma connection,
+  Apenas crie um banco Ecommerce no seu SQL server.
+
+ -Caso esteja utilizando o visual Studio para desenvolver o projeto abra o (""power shell do desenvolvedor"") -> aperte as teclas  ( CTRL + ' )
+
+-  Navegue até a sua pasta principal onde o projeto está atraves do comando (**cd NomeDaPasta**) para entrar na pasta  Ou (**Cd..**) para retornar a pasta anterior
+
+
+Vou deixar imagens ilustrando o caminho ao qual voce pode pegar o caminho onde vai colocar no comando para realizar a criação do banco 
+ 1 imagem <img width="486" height="200" alt="image" src="https://github.com/user-attachments/assets/493817e2-726e-478a-8d19-b422bda75b4f" />
+ 2 imagem <img width="458" height="354" alt="image" src="https://github.com/user-attachments/assets/1754ccae-5db4-4a64-bd3b-99a529a31f67" />
+
+- Digite o seguinte comando colocando o caminho da suas pastas
+**dotnet ef migrations add CriacaoEstruturaBanco --project "Caminho1magem\DataAccess.csproj" --startup-project "Caminho2imagem\AplicacaoProjeto.csproj"**
+
+- Apos realizar esse comando de migration voce precisa efetivar a atualizacao no banco, então coloque o seguinte comando
+
+- **dotnet ef database update --project "Caminho1imagem\DataAccess.csproj" --startup-project "caminho2imagem\AplicacaoProjeto.csproj"**
+
+- Feito isso as tabelas no banco serão criadas automaticamente.
+
+
