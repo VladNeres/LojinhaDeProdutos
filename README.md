@@ -7,27 +7,25 @@ Inicialmente criei uma API básica para gerenciar **categorias**, **subcategoria
 
 - **.NET 8**
 - **C#**
-- **Dapper**
+- **EntityFrameWork**
 - **SQL Server Express**
-- **RabbitMQ**
 - **ASP.NET Core Identity**
 - **Serilog** com sink para banco de dados
-- **MSTest + xUnit + Moq**
+- **NSubistitute + xUnit + Moq**
 
 ---
 
 ##  **Principais Funcionalidades**
 
-- **Cadastrar Categoria**  
-  - Validações de nome (tamanho, caracteres especiais)
-  - Armazena data de criação e modificação
-- **Buscar Categorias**
-  - Filtros dinâmicos por ID, Nome, Status
-  - Ordenação dinâmica (ASC/DESC) validada na Service
+**Cadastrar ,Atualizar, Buscar e  Excluir ( Categoria, SubCategorias e Produtos)**  
+
 - **Logs estruturados**
   - Toda ação relevante é logada (Controller + Service)
  
 ---
+##  Tabelas e cardinalidades  ##
+
+<img width="1181" height="422" alt="image" src="https://github.com/user-attachments/assets/750101b2-703c-455f-84e5-2e333e5fcc68" />
 
 ## **Como rodar**
 
